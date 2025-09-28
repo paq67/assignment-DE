@@ -1,0 +1,8 @@
+# .devcontainer/Dockerfile
+FROM mcr.microsoft.com/devcontainers/python:0-3.10
+
+# Install system deps useful for development
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential git curl jq \
+  && rm -rf /var/lib/apt/lists/*
+
