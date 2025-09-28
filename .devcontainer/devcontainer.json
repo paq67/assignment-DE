@@ -1,0 +1,19 @@
+{
+  "name": "Orders Dev Container",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "dev",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "runServices": ["zookeeper", "kafka"],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "forwardPorts": [8000, 9092, 2181],
+  "postCreateCommand": "pip install -r requirements.txt && python -c \"from app.db import init_db; init_db(); print('DB init done')\"",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "ms-python.python",
+    "ms-azuretools.vscode-docker",
+    "ms-python.vscode-pylance"
+  ]
+}
