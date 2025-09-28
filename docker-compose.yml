@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - .:/workspace:cached
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=sqlite:///workspace/orders.db
+      - KAFKA_BOOTSTRAP=kafka:9092
+    ports:
+      - "8000:8000"   # flask
+    command: sleep infinity
+
+  zookeeper:
+    image: bitnami/zookeeper:3.8
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/bitnami
+
+  kafka:
+    image: bitnami/kafka:3
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/bitnami
+
+volumes:
+  zookeeper_data:
+  kafka_data:
