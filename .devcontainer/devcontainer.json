@@ -1,16 +1,29 @@
 {
   "name": "Orders Dev Container",
-  "dockerComposeFile": ["../docker-compose.yml"],
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
   "service": "dev",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "shutdownAction": "stopCompose",
-  "runServices": ["zookeeper", "kafka"],
+  "runServices": ["zookeeper", "kafka", "dev"],
+
+  // Mount your repo into the workspace (default safe location in Codespaces)
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+
+  // Explicitly tell Codespaces to build from Dockerfile
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
   "forwardPorts": [8000, 9092, 2181],
+
   "postCreateCommand": "pip install -r requirements.txt && python -c \"from app.db import init_db; init_db(); print('DB init done')\"",
+
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash"
   },
+
   "extensions": [
     "ms-python.python",
     "ms-azuretools.vscode-docker",
