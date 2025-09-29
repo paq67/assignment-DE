@@ -1,8 +1,25 @@
-# .devcontainer/Dockerfile
-FROM mcr.microsoft.com/devcontainers/python:0-3.10
+# [Choice] Python version: 3, 3.10, 3.9, etc.
+# For most systems, use a -bullseye base. (Apple Silicon also supports it.)
+ARG VARIANT="3.10-bullseye"
+FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 
-# Install system deps useful for development
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential git curl jq \
-  && rm -rf /var/lib/apt/lists/*
+# Set working directory inside container
+WORKDIR /workspaces/${LOCAL_WORKSPACE_FOLDER_BASENAME}
+
+# Install system packages you might need (build tools, Kafka CLI, etc.)
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get install -y --no-install-recommends \
+       build-essential \
+       git \
+       curl \
+       jq \
+       kafkacat \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies early (for caching)
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Default command keeps the container alive
+CMD ["sleep", "infinity"]
 
